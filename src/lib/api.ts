@@ -1,15 +1,38 @@
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
-  const res = await fetch(`${API_BASE_URL}${path}`, {
-    headers: { "Content-Type": "application/json" },
-    ...options,
-  });
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(text || `Request failed: ${res.status}`);
+export class ApiError extends Error {
+  status?: number;
+  constructor(message: string, status?: number) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
   }
-  return res.json();
+}
+
+async function request<T>(path: string, options?: RequestInit & { timeoutMs?: number }): Promise<T> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), options?.timeoutMs ?? 10_000);
+  try {
+    const res = await fetch(`${API_BASE_URL}${path}`, {
+      headers: { "Content-Type": "application/json" },
+      signal: controller.signal,
+      ...options,
+    });
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      const message = text || `Request failed: ${res.status}`;
+      throw new ApiError(message, res.status);
+    }
+    return res.json();
+  } catch (err: unknown) {
+    if (err instanceof DOMException && err.name === 'AbortError') {
+      throw new ApiError('Request timed out', 408);
+    }
+    if (err instanceof ApiError) throw err;
+    throw new ApiError((err as Error)?.message || 'Network error');
+  } finally {
+    clearTimeout(timeout);
+  }
 }
 
 export interface Tribe {
