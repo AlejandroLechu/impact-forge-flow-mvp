@@ -71,7 +71,7 @@ const TribesSection = () => {
                 </div>
                 
                 <div className="flex gap-2">
-                  <Button 
+                  <Button aria-label={`Join ${tribe.name}`}
                     variant="default" 
                     className="flex-1"
                     onClick={() => toast({ title: "Joined", description: `You joined ${tribe.name}` })}

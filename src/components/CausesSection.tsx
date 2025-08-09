@@ -119,12 +119,12 @@ const CausesSection = () => {
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <Button variant="default" className="w-full" onClick={() => handleDonate(cause)} disabled={config && !config.stripe_enabled} title={config && !config.stripe_enabled ? "Stripe is disabled in this environment" : undefined}>
+                  <Button aria-label={`Donate to ${cause.name}`} variant="default" className="w-full" onClick={() => handleDonate(cause)} disabled={config && !config.stripe_enabled} title={config && !config.stripe_enabled ? "Stripe is disabled in this environment" : undefined}>
                     <DollarSign className="w-4 h-4 mr-2" />
                     Donate Now
                   </Button>
                   <div className="flex gap-2">
-                  <Button variant="outline" className="flex-1" onClick={() => navigate(`/causes/${cause.id}`)}>
+                  <Button aria-label={`Follow ${cause.name}`} variant="outline" className="flex-1" onClick={() => navigate(`/causes/${cause.id}`)}>
                       <Heart className="w-4 h-4 mr-2" />
                       Follow
                     </Button>

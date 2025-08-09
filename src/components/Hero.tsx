@@ -22,6 +22,8 @@ const Hero = () => {
           backgroundSize: 'cover',
           backgroundPosition: 'center',
         }}
+        role="img"
+        aria-label="People collaborating in an ecosystem to create impact"
       />
       
       <div className="relative z-10 max-w-4xl mx-auto px-6 text-center">
