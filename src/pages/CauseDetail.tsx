@@ -9,7 +9,16 @@ const CauseDetail = () => {
   const { id } = useParams();
   const causeId = Number(id);
   const { data: cause, isLoading, error } = useQuery({ queryKey: ["cause", causeId], queryFn: () => fetchCause(causeId) });
-  if (isLoading) return <div className="p-6">Loading…</div>;
+  if (isLoading) return (
+    <div className="max-w-3xl mx-auto p-6">
+      <div className="animate-pulse rounded-lg border p-6 space-y-4">
+        <div className="h-6 w-1/2 bg-muted rounded" />
+        <div className="h-4 w-full bg-muted rounded" />
+        <div className="h-4 w-2/3 bg-muted rounded" />
+        <div className="h-2 w-full bg-muted rounded" />
+      </div>
+    </div>
+  );
   if (error || !cause) return <div className="p-6 text-destructive">Not found</div>;
   return (
     <div className="max-w-3xl mx-auto p-6">

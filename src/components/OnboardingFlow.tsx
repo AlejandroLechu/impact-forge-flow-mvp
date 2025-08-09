@@ -184,6 +184,7 @@ const OnboardingFlow = () => {
               {messages.map((m, idx) => (
                 <div key={idx} className={`p-3 rounded-lg ${m.role === 'assistant' ? 'bg-muted/50' : 'bg-primary/10'} text-sm`}>{m.content}</div>
               ))}
+              {isPending && <div className="p-3 rounded-lg bg-muted/50 text-sm animate-pulse">Thinking…</div>}
             </div>
             <div className="flex gap-2">
               <input ref={inputRef} className="flex-1 border rounded px-3 py-2 bg-background" placeholder="Type your message…" onKeyDown={async (e) => {
