@@ -10,7 +10,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { createDonationCheckoutSession, fetchCauses, type Cause } from "@/lib/api";
+import { createDonationCheckoutSession, fetchCauses, type Cause, ApiError } from "@/lib/api";
 
 const CausesSection = () => {
   const { data: causes, isLoading, error } = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
@@ -27,8 +27,13 @@ const CausesSection = () => {
     if (!amount) return;
     const num = Number(amount);
     if (Number.isNaN(num) || num <= 0) return alert("Invalid amount");
-    const session = await createDonationCheckoutSession(cause.id, num);
-    window.location.href = session.url;
+    try {
+      const session = await createDonationCheckoutSession(cause.id, num);
+      window.location.href = session.url;
+    } catch (e) {
+      const msg = e instanceof ApiError ? e.message : 'Unable to start checkout';
+      toast({ title: 'Payment unavailable', description: msg });
+    }
   }
 
   async function submitVolunteer() {

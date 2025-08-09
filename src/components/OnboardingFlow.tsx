@@ -197,11 +197,10 @@ const OnboardingFlow = () => {
                   try {
                     const ai = await aiOnboardingChat({ session_id: sessionId, messages: next });
                     setMessages([...next, { role: 'assistant', content: ai.reply }]);
-                    // Apply profile delta heuristically to current selections for progress bar
                     const { interests = [], skills = [] } = ai.profile_delta || {};
                     interests.forEach((i: string) => handleSelection(i));
                     skills.forEach((s: string) => handleSelection(s));
-                  } catch (_) {
+                  } catch (e) {
                     setMessages([...next, { role: 'assistant', content: 'Thanks! Tell me more.' }]);
                   }
                 }

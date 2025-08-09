@@ -1,0 +1,96 @@
+# Page snapshot
+
+```yaml
+- region "Notifications (F8)":
+  - list
+- region "Notifications alt+T"
+- heading "Build Your Impact Ecosystem" [level=1]
+- paragraph: Connect tribes, causes, and communities. Transform passion into measurable impact through AI-powered collaboration.
+- button "Start Your Journey"
+- button "Discover Causes"
+- heading "10K+" [level=3]
+- paragraph: Active Members
+- heading "$2M+" [level=3]
+- paragraph: Funds Raised
+- heading "500+" [level=3]
+- paragraph: Causes Supported
+- heading "Let’s Chat" [level=2]
+- paragraph: Natural conversation with AI. We’ll learn your interests, skills, and location.
+- heading "Conversational Onboarding" [level=3]
+- text: Hi! I’m your guide. Tell me about what causes you care about, your skills, and where you are. We’ll match you to the perfect tribe.
+- textbox "Type your message…"
+- button "Continue"
+- progressbar
+- paragraph: We’ll suggest tribes after we learn enough.
+- heading "Discover Active Tribes" [level=2]
+- paragraph: Join communities of passionate changemakers working on causes that matter to you.
+- paragraph: Failed to load tribes
+- button "Explore All Tribes"
+- heading "Support Meaningful Causes" [level=2]
+- paragraph: Make a direct impact through donations, pro bono work, or by spreading awareness.
+- paragraph: Failed to load causes
+- button "Discover More Causes"
+- heading "Recognition & Growth" [level=2]
+- paragraph: Track your impact, earn recognition, and develop skills that matter.
+- heading "Impact Champions" [level=3]:
+  - img
+  - text: Impact Champions
+- paragraph: Top contributors across all causes
+- text: "1"
+- paragraph: Sarah Chen
+- text: Climate Action Leader 2847
+- img
+- text: "2"
+- paragraph: Marcus Johnson
+- text: Community Builder 2156
+- img
+- text: "3"
+- paragraph: Elena Rodriguez
+- text: Education Advocate 1923
+- img
+- heading "Rising Stars" [level=3]:
+  - img
+  - text: Rising Stars
+- paragraph: Newcomers making waves
+- text: "1"
+- paragraph: Alex Kim
+- text: Tech Innovator 1456
+- img
+- text: "2"
+- paragraph: Jordan Smith
+- text: Volunteer Coordinator 1342
+- img
+- text: "3"
+- paragraph: Taylor Brown
+- text: Fundraising Hero 1189
+- img
+- heading "Achievement Badges" [level=3]:
+  - img
+  - text: Achievement Badges
+- paragraph: Unlock badges as you complete challenges and make impact
+- img
+- heading "First Challenge" [level=4]
+- text: Common
+- img
+- heading "Team Builder" [level=4]
+- text: Uncommon
+- img
+- heading "Goal Crusher" [level=4]
+- text: Rare
+- img
+- heading "Legend" [level=4]
+- text: Legendary
+- heading "Community Leadership Advanced" [level=3]
+- text: Progress 75%
+- heading "Next Milestone:" [level=5]
+- paragraph: Lead 5 successful events
+- heading "Skills:" [level=5]
+- text: Event Planning Team Management Public Speaking
+- heading "Environmental Impact Intermediate" [level=3]
+- text: Progress 40%
+- heading "Next Milestone:" [level=5]
+- paragraph: Complete carbon footprint analysis
+- heading "Skills:" [level=5]
+- text: Sustainability Data Analysis Project Management
+- button "View My Dashboard"
+```
