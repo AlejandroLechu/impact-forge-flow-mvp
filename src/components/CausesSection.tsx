@@ -51,7 +51,20 @@ const CausesSection = () => {
           </p>
         </div>
 
-        {isLoading && <p className="text-center text-muted-foreground">Loading causes…</p>}
+        {isLoading && (
+          <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="animate-pulse rounded-lg border p-6 space-y-4">
+                <div className="h-4 w-24 bg-muted rounded" />
+                <div className="h-6 w-2/3 bg-muted rounded" />
+                <div className="h-16 w-full bg-muted rounded" />
+                <div className="flex gap-2">
+                  <div className="h-9 w-full bg-muted rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         {error && <p className="text-center text-destructive">Failed to load causes</p>}
         <div className="grid gap-8 lg:grid-cols-2 xl:grid-cols-3">
           {(causes || []).map((cause: Cause) => (
