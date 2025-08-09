@@ -65,7 +65,16 @@ const OnboardingFlow = () => {
   ]);
   const inputRef = useRef<HTMLInputElement>(null);
   const [sessionId] = useState(() => Math.random().toString(36).slice(2));
-  const [suggested, setSuggested] = useState<any[] | null>(null);
+  interface SuggestedTribe {
+    id?: number
+    name: string
+    description: string
+    location?: string | null
+    members?: number
+    challenges?: number
+  }
+
+  const [suggested, setSuggested] = useState<SuggestedTribe[] | null>(null);
 
   const { mutateAsync: getSuggestions, isPending } = useMutation({
     mutationFn: (payload: { interests: string[]; skills: string[]; location: string[] }) => suggestTribes(payload),
@@ -121,7 +130,7 @@ const OnboardingFlow = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {(suggested && suggested.length > 0 ? suggested.slice(0, 2) : suggestedTribesFallback).map((tribe: any, index: number) => (
+            {(suggested && suggested.length > 0 ? suggested.slice(0, 2) : suggestedTribesFallback).map((tribe: SuggestedTribe, index: number) => (
               <Card key={index} className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl">{tribe.name}</CardTitle>
