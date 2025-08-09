@@ -1,73 +1,48 @@
-# Welcome to your Lovable project
+## Impact Forge – MVP Stack
 
-## Project info
+Production-ready MVP with React + Vite frontend and FastAPI + Postgres backend.
 
-**URL**: https://lovable.dev/projects/41b90877-a1d1-41ba-8c5d-39403c918a26
+### Quickstart (Local)
 
-## How can I edit this code?
-
-There are several ways of editing your application.
-
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/41b90877-a1d1-41ba-8c5d-39403c918a26) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+1) Copy env template and set values (do not overwrite your .env):
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+cp .env.example .env
+```
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+2) Start database and backend:
 
-# Step 3: Install the necessary dependencies.
+```sh
+docker compose up --build -d db
+docker compose up --build backend
+```
+
+3) Seed sample data (one-time):
+
+```sh
+docker compose exec backend python -m app.seed
+```
+
+4) Start frontend:
+
+```sh
 npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Frontend: http://localhost:5173
+Backend: http://localhost:8000
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Stripe Webhook (optional)
 
-**Use GitHub Codespaces**
+Expose webhook endpoint and set secret:
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```sh
+stripe listen --forward-to localhost:8000/api/stripe/webhook
+export STRIPE_WEBHOOK_SECRET=whsec_...
+```
 
-## What technologies are used for this project?
+### Notes
 
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/41b90877-a1d1-41ba-8c5d-39403c918a26) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+- Configure `VITE_API_BASE_URL` for frontend API base.
+- Set `STRIPE_API_KEY` for live donation checkout.

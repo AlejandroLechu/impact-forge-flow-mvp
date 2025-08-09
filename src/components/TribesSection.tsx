@@ -2,44 +2,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Users, Target, Calendar, MapPin } from "lucide-react";
-
-const tribes = [
-  {
-    id: 1,
-    name: "Climate Action Coalition",
-    description: "Fighting climate change through local action and global awareness campaigns.",
-    members: 1847,
-    activeChallenges: 5,
-    location: "Global",
-    category: "Environment",
-    status: "Active",
-    recentActivity: "2 hours ago"
-  },
-  {
-    id: 2,
-    name: "Tech for Good",
-    description: "Building technology solutions that address social and environmental challenges.",
-    members: 923,
-    activeChallenges: 8,
-    location: "San Francisco",
-    category: "Technology",
-    status: "Growing",
-    recentActivity: "1 hour ago"
-  },
-  {
-    id: 3,
-    name: "Education Equity Network",
-    description: "Ensuring quality education access for underserved communities worldwide.",
-    members: 1456,
-    activeChallenges: 3,
-    location: "Multiple Cities",
-    category: "Education",
-    status: "Active",
-    recentActivity: "30 minutes ago"
-  }
-];
+import { useNavigate } from "react-router-dom";
+import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { fetchTribes, type Tribe } from "@/lib/api";
 
 const TribesSection = () => {
+  const { data: tribes, isLoading, error } = useQuery({ queryKey: ["tribes"], queryFn: fetchTribes });
+  const navigate = useNavigate();
+  const { toast } = useToast();
   return (
     <section className="py-20 bg-gradient-to-br from-background to-accent/10">
       <div className="max-w-6xl mx-auto px-6">
@@ -50,22 +21,19 @@ const TribesSection = () => {
           </p>
         </div>
 
+        {isLoading && <p className="text-center text-muted-foreground">Loading tribes…</p>}
+        {error && <p className="text-center text-destructive">Failed to load tribes</p>}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {tribes.map((tribe) => (
+          {(tribes || []).map((tribe: Tribe) => (
             <Card key={tribe.id} className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-primary/30">
               <CardHeader>
                 <div className="flex justify-between items-start mb-2">
-                  <Badge variant={tribe.status === "Growing" ? "success" : "outline"}>
-                    {tribe.status}
-                  </Badge>
-                  <span className="text-xs text-muted-foreground">{tribe.recentActivity}</span>
+                  <Badge variant="outline">Tribe</Badge>
+                  <span className="text-xs text-muted-foreground">{tribe.location || "Unknown"}</span>
                 </div>
                 <CardTitle className="text-xl group-hover:text-primary transition-colors">
                   {tribe.name}
                 </CardTitle>
-                <Badge variant="secondary" className="w-fit">
-                  {tribe.category}
-                </Badge>
               </CardHeader>
               
               <CardContent>
@@ -76,15 +44,15 @@ const TribesSection = () => {
                 <div className="space-y-3 mb-6">
                   <div className="flex items-center gap-2 text-sm">
                     <Users className="w-4 h-4 text-primary" />
-                    <span>{tribe.members.toLocaleString()} members</span>
+                    <span>Members TBD</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <Target className="w-4 h-4 text-success" />
-                    <span>{tribe.activeChallenges} active challenges</span>
+                    <span>Challenges TBD</span>
                   </div>
                   <div className="flex items-center gap-2 text-sm">
                     <MapPin className="w-4 h-4 text-muted-foreground" />
-                    <span>{tribe.location}</span>
+                    <span>{tribe.location || "Unknown"}</span>
                   </div>
                 </div>
                 
@@ -92,10 +60,11 @@ const TribesSection = () => {
                   <Button 
                     variant="default" 
                     className="flex-1"
+                    onClick={() => toast({ title: "Joined", description: `You joined ${tribe.name}` })}
                   >
                     Join Tribe
                   </Button>
-                  <Button variant="outline" size="icon">
+                  <Button variant="outline" size="icon" onClick={() => navigate("/tribes") }>
                     <Calendar className="w-4 h-4" />
                   </Button>
                 </div>

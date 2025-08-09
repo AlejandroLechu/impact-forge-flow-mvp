@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -32,7 +32,10 @@ const onboardingSteps: OnboardingStep[] = [
   }
 ];
 
-const suggestedTribes = [
+import { useMutation } from "@tanstack/react-query";
+import { suggestTribes, aiOnboardingChat } from "@/lib/api";
+
+const suggestedTribesFallback = [
   {
     name: "Green Tech Innovators",
     description: "Building sustainable technology solutions for environmental challenges",
@@ -57,6 +60,16 @@ const OnboardingFlow = () => {
     location: []
   });
   const [showResults, setShowResults] = useState(false);
+  const [messages, setMessages] = useState<{ role: 'system' | 'user' | 'assistant'; content: string }[]>([
+    { role: 'assistant', content: "Hi! I’m your guide. Tell me about what causes you care about, your skills, and where you are. We’ll match you to the perfect tribe." }
+  ]);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [sessionId] = useState(() => Math.random().toString(36).slice(2));
+  const [suggested, setSuggested] = useState<any[] | null>(null);
+
+  const { mutateAsync: getSuggestions, isPending } = useMutation({
+    mutationFn: (payload: { interests: string[]; skills: string[]; location: string[] }) => suggestTribes(payload),
+  });
 
   const progress = ((currentStep + 1) / onboardingSteps.length) * 100;
 
@@ -72,10 +85,20 @@ const OnboardingFlow = () => {
     }));
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (currentStep < onboardingSteps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
+      try {
+        const res = await getSuggestions({
+          interests: selections.interests,
+          skills: selections.skills,
+          location: selections.location,
+        });
+        setSuggested(res);
+      } catch (_) {
+        setSuggested(null);
+      }
       setShowResults(true);
     }
   };
@@ -85,6 +108,8 @@ const OnboardingFlow = () => {
       setCurrentStep(currentStep - 1);
     }
   };
+
+  
 
   if (showResults) {
     return (
@@ -96,14 +121,14 @@ const OnboardingFlow = () => {
           </div>
 
           <div className="grid gap-6 md:grid-cols-2">
-            {suggestedTribes.map((tribe, index) => (
+            {(suggested && suggested.length > 0 ? suggested.slice(0, 2) : suggestedTribesFallback).map((tribe: any, index: number) => (
               <Card key={index} className="border-2 hover:border-primary/50 transition-all duration-300 hover:shadow-lg">
                 <CardHeader>
                   <CardTitle className="text-xl">{tribe.name}</CardTitle>
                   <div className="flex flex-wrap gap-2">
-                    <Badge variant="outline">{tribe.members} members</Badge>
-                    <Badge variant="outline">{tribe.challenges} active challenges</Badge>
-                    <Badge variant="secondary">{tribe.location}</Badge>
+                    <Badge variant="outline">Members TBD</Badge>
+                    <Badge variant="outline">Challenges TBD</Badge>
+                    <Badge variant="secondary">{tribe.location || "Unknown"}</Badge>
                   </div>
                 </CardHeader>
                 <CardContent>
@@ -137,45 +162,45 @@ const OnboardingFlow = () => {
     <section className="py-20 bg-gradient-to-br from-background to-muted/20">
       <div className="max-w-2xl mx-auto px-6">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold mb-4 text-primary">Let's Find Your Perfect Tribe</h2>
-          <p className="text-muted-foreground mb-6">Answer a few questions and we'll connect you with like-minded changemakers.</p>
-          <Progress value={progress} className="w-full" />
-          <p className="text-sm text-muted-foreground mt-2">Step {currentStep + 1} of {onboardingSteps.length}</p>
+          <h2 className="text-3xl font-bold mb-4 text-primary">Let’s Chat</h2>
+          <p className="text-muted-foreground mb-6">Natural conversation with AI. We’ll learn your interests, skills, and location.</p>
         </div>
 
         <Card className="border-2 shadow-lg">
           <CardHeader>
-            <CardTitle className="text-xl text-center">{currentStepData.question}</CardTitle>
+            <CardTitle className="text-xl text-center">Conversational Onboarding</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-3">
-              {currentStepData.options?.map((option) => (
-                <Button
-                  key={option}
-                  variant={selections[currentStepData.type].includes(option) ? "glow" : "outline"}
-                  className="justify-start p-4 h-auto text-left"
-                  onClick={() => handleSelection(option)}
-                >
-                  {option}
-                </Button>
+            <div className="space-y-3 max-h-80 overflow-auto mb-4">
+              {messages.map((m, idx) => (
+                <div key={idx} className={`p-3 rounded-lg ${m.role === 'assistant' ? 'bg-muted/50' : 'bg-primary/10'} text-sm`}>{m.content}</div>
               ))}
             </div>
-
-            <div className="flex justify-between mt-8">
-              <Button 
-                variant="ghost" 
-                onClick={handleBack}
-                disabled={currentStep === 0}
-              >
-                Back
-              </Button>
-              <Button 
-                onClick={handleNext}
-                disabled={selections[currentStepData.type].length === 0}
-                variant="hero"
-              >
-                {currentStep === onboardingSteps.length - 1 ? 'Find My Tribes' : 'Next'}
-              </Button>
+            <div className="flex gap-2">
+              <input ref={inputRef} className="flex-1 border rounded px-3 py-2 bg-background" placeholder="Type your message…" onKeyDown={async (e) => {
+                if (e.key === 'Enter') {
+                  const text = (e.target as HTMLInputElement).value.trim();
+                  if (!text) return;
+                  (e.target as HTMLInputElement).value = '';
+                  const next = [...messages, { role: 'user', content: text }];
+                  setMessages(next);
+                  try {
+                    const ai = await aiOnboardingChat({ session_id: sessionId, messages: next });
+                    setMessages([...next, { role: 'assistant', content: ai.reply }]);
+                    // Apply profile delta heuristically to current selections for progress bar
+                    const { interests = [], skills = [] } = ai.profile_delta || {};
+                    interests.forEach((i: string) => handleSelection(i));
+                    skills.forEach((s: string) => handleSelection(s));
+                  } catch (_) {
+                    setMessages([...next, { role: 'assistant', content: 'Thanks! Tell me more.' }]);
+                  }
+                }
+              }} />
+              <Button onClick={() => handleNext()} variant="hero">Continue</Button>
+            </div>
+            <div className="mt-3">
+              <Progress value={progress} className="w-full" />
+              <p className="text-xs text-muted-foreground mt-1">We’ll suggest tribes after we learn enough.</p>
             </div>
           </CardContent>
         </Card>

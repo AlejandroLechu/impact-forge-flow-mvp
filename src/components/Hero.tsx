@@ -1,7 +1,18 @@
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 import heroImage from "@/assets/hero-ecosystem.jpg";
 
 const Hero = () => {
+  const navigate = useNavigate();
+  const scrollTo = (id: string) => {
+    const el = document.getElementById(id);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    } else {
+      navigate(`/${id === 'causes' ? 'causes' : id === 'tribes' ? 'tribes' : ''}`);
+    }
+  };
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-background via-muted/50 to-accent/30">
       <div 
@@ -27,6 +38,7 @@ const Hero = () => {
             size="lg" 
             variant="hero"
             className="px-8 py-6 text-lg font-semibold transform hover:scale-105 transition-all duration-300"
+            onClick={() => scrollTo('onboarding')}
           >
             Start Your Journey
           </Button>
@@ -34,6 +46,7 @@ const Hero = () => {
             size="lg" 
             variant="glow"
             className="px-8 py-6 text-lg font-semibold transform hover:scale-105 transition-all duration-300"
+            onClick={() => scrollTo('causes')}
           >
             Discover Causes
           </Button>
