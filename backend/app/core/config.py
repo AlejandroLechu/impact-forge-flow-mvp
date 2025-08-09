@@ -14,6 +14,9 @@ class Settings(BaseModel):
     elastic_cloud_id: str | None = os.getenv("ELASTIC_CLOUD_ID")
     elastic_api_key: str | None = os.getenv("ELASTIC_API_KEY")
     backend_cors_origins: str = os.getenv("BACKEND_CORS_ORIGINS", "http://localhost:5173")
+    @property
+    def stripe_enabled(self) -> bool:
+        return bool(self.stripe_api_key and self.stripe_webhook_secret)
 
 
 @lru_cache

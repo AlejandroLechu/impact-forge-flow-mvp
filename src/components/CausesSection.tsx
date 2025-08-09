@@ -10,10 +10,11 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { createDonationCheckoutSession, fetchCauses, type Cause, ApiError } from "@/lib/api";
+import { createDonationCheckoutSession, fetchCauses, type Cause, ApiError, fetchPublicConfig } from "@/lib/api";
 
 const CausesSection = () => {
   const { data: causes, isLoading, error } = useQuery({ queryKey: ["causes"], queryFn: fetchCauses });
+  const { data: config } = useQuery({ queryKey: ["public-config"], queryFn: fetchPublicConfig });
   const [volunteerFor, setVolunteerFor] = useState<number | null>(null);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -118,7 +119,7 @@ const CausesSection = () => {
                 </div>
                 
                 <div className="flex flex-col gap-2">
-                  <Button variant="default" className="w-full" onClick={() => handleDonate(cause)}>
+                  <Button variant="default" className="w-full" onClick={() => handleDonate(cause)} disabled={config && !config.stripe_enabled} title={config && !config.stripe_enabled ? "Stripe is disabled in this environment" : undefined}>
                     <DollarSign className="w-4 h-4 mr-2" />
                     Donate Now
                   </Button>

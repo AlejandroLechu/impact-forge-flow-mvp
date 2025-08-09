@@ -54,6 +54,10 @@ export interface Cause {
   location?: string | null;
 }
 
+export async function fetchPublicConfig(): Promise<{ stripe_enabled: boolean }> {
+  return request<{ stripe_enabled: boolean }>("/public/config");
+}
+
 export async function fetchTribes(): Promise<Tribe[]> {
   return request<Tribe[]>("/public/tribes");
 }
