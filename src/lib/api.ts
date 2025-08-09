@@ -64,8 +64,11 @@ export async function fetchCause(causeId: number): Promise<Cause> {
   return request<Cause>(`/public/causes/${causeId}`);
 }
 
-export async function aiOnboardingChat(input: { session_id: string; user_id?: number | null; messages: Array<{ role: string; content: string }> }) {
-  return request<{ reply: string; profile_delta: any }>("/onboarding/ai-chat", {
+type ChatMessage = { role: "system" | "user" | "assistant"; content: string }
+type ProfileDelta = { interests?: string[]; skills?: string[]; location_city?: string; location_country?: string }
+
+export async function aiOnboardingChat(input: { session_id: string; user_id?: number | null; messages: Array<ChatMessage> }) {
+  return request<{ reply: string; profile_delta: ProfileDelta }>("/onboarding/ai-chat", {
     method: "POST",
     body: JSON.stringify(input),
   });
