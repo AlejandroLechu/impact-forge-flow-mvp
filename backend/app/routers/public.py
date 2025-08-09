@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 
 from ..db import get_db
 from .. import models, schemas
+from ..core.config import get_settings
 
 router = APIRouter(prefix="/public", tags=["public"])
 
@@ -24,4 +25,11 @@ def get_cause(cause_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Cause not found")
     return cause
 
+
+@router.get("/config")
+def public_config():
+    settings = get_settings()
+    return {
+        "stripe_enabled": settings.stripe_enabled,
+    }
 

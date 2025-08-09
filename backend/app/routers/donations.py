@@ -11,8 +11,8 @@ router = APIRouter(prefix="/donations", tags=["donations"])
 @router.post("/create-checkout-session")
 def create_checkout_session(payload: schemas.DonationCreate, db: Session = Depends(get_db)):
     settings = get_settings()
-    if not settings.stripe_api_key:
-        raise HTTPException(status_code=400, detail="Stripe not configured")
+    if not settings.stripe_enabled:
+        raise HTTPException(status_code=503, detail="Stripe is disabled in this environment")
 
     cause = db.query(models.Cause).get(payload.cause_id)
     if not cause:
